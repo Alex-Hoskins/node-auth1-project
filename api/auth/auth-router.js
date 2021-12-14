@@ -67,14 +67,19 @@ const
   router.post('/login', checkUsernameExists, async (req, res, next) => {
     try {
       const { username, password } = req.body
+      //get user
       const userFromDb = await User.findBy(username)
+      //check if user exists
       if (!userFromDb) {
         return next({ message: 'Invalid credentials', status: 401 })
       }
+      //bcrypt decrypts the password
       const verifies = bcrypt.compareSync(password, userFromDb.password)
+      //verify passwords match
       if (!verifies) {
         return next({ message: 'Invalid credentials', status: 401 })
       }
+      //if passwords match then store user to session
       req.session.user = userFromDb
       res.status(200).json({
         message: `Welcome ${username}!`
@@ -101,7 +106,9 @@ const
  */
   router.get('/logout', async (req, res, next) => {
     try {
+      //check if logged in
       if (req.session.user) {
+        //if logged in destroy session
         req.session.destroy((err) => {
           if (err) {
             res.json(err)

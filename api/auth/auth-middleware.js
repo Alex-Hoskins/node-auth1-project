@@ -9,7 +9,9 @@ const User = require('../users/users-model')
   }
 */
 function restricted(req, res, next) {
+  //check if a session is saved
   if (req.session.user) {
+    //proceed if session is saved
     next()
   } else {
     next({ status: 401, message: 'You shall not pass!' })
@@ -26,7 +28,6 @@ function restricted(req, res, next) {
 */
 async function checkUsernameFree(req, res, next) {
   const user = await User.findBy(req.body.username)
-  console.log('check if free', user)
   if (!user) {
     next()
   } else {
